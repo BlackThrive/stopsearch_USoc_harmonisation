@@ -22,7 +22,7 @@ lapply(packages, library, character.only = TRUE)
 # inpaths can be configured in future to be specified by user in a function
 inpath <- "./data/" 
 waves <- c("k_indresp.dta","j_indresp.dta","i_indresp.dta")
-ss_file <- "ss_disp_eng_wales_2019-2021.csv"
+
 
 # wave 11
 k_indresp <- haven::read_dta(paste0(inpath, waves[1]))
@@ -144,7 +144,7 @@ combined_waves_reduced <- combined_waves %>%
   # remove Scotland and NI
   filter(gor_dv != "Scotland" & gor_dv != "Northern Ireland") 
 
-# set numeric variables to as.numeric
+# set numeric variables to numeric
 combined_waves_reduced_2 <- combined_waves_reduced %>%
   purrr::map_at(.at = c("intdatd_dv", 
                  "intdatm_dv", 
@@ -155,9 +155,14 @@ combined_waves_reduced_2 <- combined_waves_reduced %>%
                  "fimngrs_dv", 
                  "scghq1_dv",
                  "scghq2_dv"), .f = function(x) as.numeric(as.character(x))) %>%
+  purrr:::map_at(.at = c("pidp",
+                         "hidp"),
+                 .f = function(x) as.factor(x)) %>%
   as.data.frame() %>%
   # reapply haven labels from original dataframe (as.numeric strips labels)
   labelled::copy_labels_from(combined_waves_reduced)
 
 
-write.csv(combined_waves_reduced_2, file = paste0("./data/", Sys.Date(), "_us_data_w9-11.csv"))
+write.csv(combined_waves_reduced_2, file = paste0("./data/", Sys.Date(), "_us_data_w9-11.csv"), row.names = F)
+haven::write_dta(combined_waves_reduced_2, path = paste0("./data/", Sys.Date(), "_us_data_w9-11.dta"), label = NULL)
+saveRDS(combined_waves_reduced_2, file = paste0("./data/", Sys.Date(), "_us_data_w9-11.rds"))
