@@ -21,114 +21,54 @@ lapply(packages, library, character.only = TRUE)
 
 # inpaths can be configured in future to be specified by user in a function
 inpath <- "./data/" 
-waves <- c("k_indresp.dta","j_indresp.dta","i_indresp.dta")
+# set waves to import and corresponding wave numbers and prefixes
+waves <- data.frame("file" = c("k_indresp.dta","j_indresp.dta","i_indresp.dta", "h_indresp.dta", "g_indresp.dta", "f_indresp.dta"),
+                    "number" = c(11, 10, 9, 8, 7, 6),
+                    "prefix" = c("k_","j_","i_","h_","g_","f_")) # make this so that it extracts from file col
 
+combined_waves <- data.frame()
 
-# wave 11
-k_indresp <- haven::read_dta(paste0(inpath, waves[1]))
+# iteratively load waves, subset to variables of interest, and combine
+for(i in 1:nrow(waves)){
+  this_wave <- haven::read_dta(paste0(inpath, waves[i,1]))
+  
+  # remove the wave prefixes from dataset
+  names(this_wave) <- sub(waves$prefix[i],"", names(this_wave))
+  
+  this_wave <- this_wave %>%
+    dplyr::select(pidp, # participant id
+                  hidp, # household id
+                  intdatd_dv, # interview date - day
+                  intdatm_dv, # interview date - month
+                  intdaty_dv, # interview date - year
+                  intdatd_if, # interview date - imputation flag
+                  age_dv, # age
+                  age_if, # age imputation flag
+                  sex_dv, # sex
+                  ethn_dv, # ethnicity
+                  # k_frpbulli, # physically bullied - this is alternate waves - 9 and 11
+                  # k_frobulli, # bullied in other ways - this is alternate waves - 9 and 11
+                  health, # long term health condition
+                  eatlivu, # times in last 7 days eaten with family
+                  # ypnpal, # number of close friends
+                  fimnnet_dv, # net personal income
+                  fimngrs_dv, # gross personal income
+                  scghq1_dv, # ghq likert version - should we take sub-elements of ghq? n = 12
+                  scghq2_dv, # ghq caseness version
+                  gor_dv) # region 
+  
+  # create wave variable
+  this_wave$wave <- waves[i,2]
+  
+  # use dplyr::bind_rows in case columns aren't identical
+  combined_waves <- dplyr::bind_rows(combined_waves, this_wave) 
+  rm(this_wave)
+}
 
-# select vars
-k_indresp_ex <- dplyr::select(k_indresp,
-                              pidp, # participant id
-                              k_hidp, # household id
-                              k_intdatd_dv, # interview date - day
-                              k_intdatm_dv, # interview date - month
-                              k_intdaty_dv, # interview date - year
-                              k_intdatd_if, # interview date - imputation flag
-                              k_age_dv, # age
-                              k_age_if, # age imputation flag
-                              k_sex_dv, # sex
-                              k_ethn_dv, # ethnicity
-                              # k_frpbulli, # physically bullied - this is alternate waves - 9 and 11
-                              # k_frobulli, # bullied in other ways - this is alternate waves - 9 and 11
-                              k_health, # long term health condition
-                              k_eatlivu, # times in last 7 days eaten with family
-                              k_ypnpal, # number of close friends
-                              k_fimnnet_dv, # net personal income
-                              k_fimngrs_dv, # gross personal income
-                              k_scghq1_dv, # ghq likert version - should we take sub-elements of ghq? n = 12
-                              k_scghq2_dv, # ghq caseness version
-                              k_gor_dv) # region 
+rm(waves)
 
-# remove unwanted data and save space
-rm(k_indresp) 
-
-# wave 10
-j_indresp <- haven::read_dta(paste0(inpath, waves[2]))
-
-# select vars
-j_indresp_ex <- dplyr::select(j_indresp,
-                              pidp,# participant id
-                              j_hidp, # household id
-                              j_intdatd_dv, # interview date - day
-                              j_intdatm_dv, # interview date - month
-                              j_intdaty_dv, # interview date - year
-                              j_intdatd_if, # interview date - imputation flag
-                              j_age_dv, # age
-                              j_age_if, # age imputation flag                       
-                              j_sex_dv, # sex
-                              j_ethn_dv, # ethnicity
-                              #j_frpbulli, # physically bullied - this is alternate waves - 9 and 11
-                              #j_frobulli, # bullied in other ways - this is alternate waves - 9 and 11
-                              j_health, # long term health condition
-                              j_eatlivu, # times in last 7 days eaten with family
-                              j_ypnpal, # number of close friends
-                              j_fimnnet_dv, # net personal income
-                              j_fimngrs_dv, # gross personal income
-                              j_scghq1_dv, # ghq likert version - should we take sub-elements of ghq? n = 12
-                              j_scghq2_dv, # ghq caseness version
-                              j_gor_dv) # region
-
-# remove unwanted data and save space
-rm(j_indresp) 
-
-# wave 9
-i_indresp <- haven::read_dta(paste0(inpath, waves[3]))
-
-# select vars
-i_indresp_ex <- dplyr::select(i_indresp,
-                              pidp, # participant id
-                              i_hidp, # household id
-                              i_intdatd_dv, # interview date - day
-                              i_intdatm_dv, # interview date - month
-                              i_intdaty_dv, # interview date - year
-                              i_intdatd_if, # interview date - imputation flag
-                              i_age_dv, # age
-                              i_age_if, # age imputation flag                      
-                              i_sex_dv, # sex
-                              i_ethn_dv, # ethnicity
-                              # i_frpbulli, # physically bullied - this is alternate waves - 9 and 11
-                              # i_frobulli, # bullied in other ways - this is alternate waves - 9 and 11
-                              i_health, # long term health condition
-                              i_eatlivu, # times in last 7 days eaten with family
-                              #i_ypnpal, # number of close friends # for some reason doesn't exist in wave 9?
-                              i_fimnnet_dv, # net personal income
-                              i_fimngrs_dv, # gross personal income
-                              i_scghq1_dv, # ghq likert version - should we take sub-elements of ghq? n = 12
-                              i_scghq2_dv, # ghq caseness version
-                              i_gor_dv) # region
-
-# remove unwanted data and save space
-rm(i_indresp)  
-
-# create a wave variable and remove the wave prefixes from datasets
-k_indresp_ex$wave <- 11
-names(k_indresp_ex) <- sub("^k_","", names(k_indresp_ex))
-
-j_indresp_ex$wave <- 10
-names(j_indresp_ex) <- sub("^j_","", names(j_indresp_ex))
-
-i_indresp_ex$wave <- 9
-names(i_indresp_ex) <- sub("^i_","", names(i_indresp_ex))
-
-# use dplyr::bind_rows in case columns aren't identical
-combined_waves <- dplyr::bind_rows(k_indresp_ex, j_indresp_ex, i_indresp_ex) %>%   
+combined_waves <- combined_waves %>%   
   dplyr::relocate(wave, .after = pidp) # move wave column to after pidp col
-
-# remove unwanted data
-rm(i_indresp_ex)
-rm(j_indresp_ex)
-rm(k_indresp_ex)
 
 # drop non-response values (i.e. those with value below 0) from critical 
 # variables (note non-critical vars will still have non-response values)
@@ -143,6 +83,8 @@ combined_waves_reduced <- combined_waves %>%
   haven::as_factor() %>% # convert all values to their labels
   # remove Scotland and NI
   filter(gor_dv != "Scotland" & gor_dv != "Northern Ireland") 
+
+rm(combined_waves)
 
 # set numeric variables to numeric
 combined_waves_reduced_2 <- combined_waves_reduced %>%
@@ -162,7 +104,9 @@ combined_waves_reduced_2 <- combined_waves_reduced %>%
   # reapply haven labels from original dataframe (as.numeric strips labels)
   labelled::copy_labels_from(combined_waves_reduced)
 
+rm(combined_waves_reduced)
 
-write.csv(combined_waves_reduced_2, file = paste0("./data/", Sys.Date(), "_us_data_w9-11.csv"), row.names = F)
-haven::write_dta(combined_waves_reduced_2, path = paste0("./data/", Sys.Date(), "_us_data_w9-11.dta"), label = NULL)
-saveRDS(combined_waves_reduced_2, file = paste0("./data/", Sys.Date(), "_us_data_w9-11.rds"))
+write.csv(combined_waves_reduced_2, file = paste0("./data/out/", Sys.Date(), "_us_data_w6-11.csv"), row.names = F)
+haven::write_dta(combined_waves_reduced_2, path = paste0("./data/out/", Sys.Date(), "_us_data_w6-11.dta"), label = NULL)
+saveRDS(combined_waves_reduced_2, file = paste0("./data/out/", Sys.Date(), "_us_data_w6-11.rds"))
+
