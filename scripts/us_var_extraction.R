@@ -1,7 +1,7 @@
 # 18/10/2022
 
 # This script:
-# - imports Understanding Society waves 9, 10, and 11
+# - imports Understanding Society waves 6, 7, 8, 9, 10, 11, and 12
 # - selects variables of interest
 # - combines waves
 # - removes non-response cases for critical variables (sex, ethnicity, long-term
@@ -10,6 +10,9 @@
 # - selects only data for England and Wales
 # - sets appropriate variable types
 # - writes the result to csv
+
+# Updates
+# 05/11/2022 - Addition of newly released wave 12 ("l")
 
 rm(list = ls()) # clean environment
 
@@ -22,9 +25,9 @@ lapply(packages, library, character.only = TRUE)
 # inpaths can be configured in future to be specified by user in a function
 inpath <- "./data/" 
 # set waves to import and corresponding wave numbers and prefixes
-waves <- data.frame("file" = c("k_indresp.dta","j_indresp.dta","i_indresp.dta", "h_indresp.dta", "g_indresp.dta", "f_indresp.dta"),
-                    "number" = c(11, 10, 9, 8, 7, 6),
-                    "prefix" = c("k_","j_","i_","h_","g_","f_")) # make this so that it extracts from file col
+waves <- data.frame("file" = c("l_indresp.dta", "k_indresp.dta","j_indresp.dta","i_indresp.dta", "h_indresp.dta", "g_indresp.dta", "f_indresp.dta"),
+                    "number" = c(12, 11, 10, 9, 8, 7, 6),
+                    "prefix" = c("l_", "k_","j_","i_","h_","g_","f_")) # make this so that it extracts from file col
 
 combined_waves <- data.frame()
 
@@ -106,7 +109,7 @@ combined_waves_reduced_2 <- combined_waves_reduced %>%
 
 rm(combined_waves_reduced)
 
-write.csv(combined_waves_reduced_2, file = paste0("./data/out/", Sys.Date(), "_us_data_w6-11.csv"), row.names = F)
-haven::write_dta(combined_waves_reduced_2, path = paste0("./data/out/", Sys.Date(), "_us_data_w6-11.dta"), label = NULL)
-saveRDS(combined_waves_reduced_2, file = paste0("./data/out/", Sys.Date(), "_us_data_w6-11.rds"))
+write_csv(combined_waves_reduced_2, file = paste0("./data/out/", Sys.Date(), "_us_data_w6-12.csv"))
+saveRDS(combined_waves_reduced_2, file = paste0("./data/out/", Sys.Date(), "_us_data_w6-12.rds"))
+haven::write_dta(combined_waves_reduced_2, path = paste0("./data/out/", Sys.Date(), "_us_data_w6-12.dta"), label = NULL)
 
