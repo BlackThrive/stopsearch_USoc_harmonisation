@@ -16,7 +16,7 @@
 # 05/01/2023 
 #    - Addition of 'employ' variable (employment status)
 #    - Modified code to deal with value label issues across waves
-
+# 06/01/2023 - Added line to convert scghq2_dv to binary 'case'
 
 rm(list = ls()) # clean environment
 
@@ -84,6 +84,7 @@ for(i in 1:nrow(waves)){
         ethn_dv > 0 & 
         health > 0 & 
         scghq1_dv >= 0 & 
+        scghq2_dv >= 0 &
         age_dv < 30 & 
         employ > 0 &
         fimnnet_dv >= 0) %>%
@@ -126,6 +127,19 @@ combined_waves <- combined_waves %>%
 combined_waves$employ <- fct_collapse(combined_waves$employ, 
                                    Yes = c("yes", "Yes"),
                                    No = c("no","No"))
+
+# create case factor from scghq2_dv
+# threshold is 3
+combined_waves$ghq_case <- factor(
+  sapply(
+    combined_waves$scghq2_dv, 
+    function(x) if(x > 3){"Yes"} else{"No"}), 
+  levels = c("No","Yes"))
+
+# move case factor next to scghq2_dv
+combined_waves <- combined_waves %>%
+  relocate(ghq_case, .after = scghq2_dv)
+
 
 write_csv(combined_waves, file = paste0("./data/out/", Sys.Date(), "_us_data_w6-12.csv"))
 saveRDS(combined_waves, file = paste0("./data/out/", Sys.Date(), "_us_data_w6-12.rds"))
