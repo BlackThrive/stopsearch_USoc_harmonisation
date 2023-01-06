@@ -1,3 +1,4 @@
-# Understanding Society Extraction and Harmonisation code
+# Understanding Society and Police Stop and Search Harmonisation
 
-This project contains scripts for extracting Understanding Society variables that are relevant for examining the relationship between stop and search and mental health in young people and scripts for harmonising these variables with stop and search data extracted via our **extractss** package.
+The goal of this project is to provide illustrative examples of the how we combined Understanding Society variables with police stop and search data (acquired using [**extractss**](https://github.com/BlackThrive/extractss)) to explore the relationship between the use of stop and search and young people's mental health. The scripts are for illustration purposes. Understanding Society data is not made available here because it is subject to End User Licence agreement that must be made via the UK Data Service ([https://ukdataservice.ac.uk/](https://ukdataservice.ac.uk/)).
+
