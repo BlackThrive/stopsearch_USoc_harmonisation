@@ -29,17 +29,20 @@ lapply(packages, library, character.only = TRUE)
 # inpaths can be configured in future to be specified by user in a function
 inpath <- "./data/" 
 # set waves to import and corresponding wave numbers and prefixes
-waves <- data.frame("file" = c("l_indresp.dta", 
-  "k_indresp.dta","j_indresp.dta","i_indresp.dta", "h_indresp.dta", "g_indresp.dta", "f_indresp.dta"),
-                    "number" = c(12, 
-                      11, 10, 9, 8, 7, 6),
-                    "prefix" = c("l_", 
-                      "k_","j_","i_","h_","g_","f_")) # make this so that it extracts from file col
+waves <- data.frame("file" = c("l_indresp.dta",  
+                               "k_indresp.dta",
+                               "j_indresp.dta",
+                               "i_indresp.dta", 
+                               "h_indresp.dta", 
+                               "g_indresp.dta", 
+                               "f_indresp.dta"),
+                    "number" = c(12, 11, 10, 9, 8, 7, 6),
+                    "prefix" = c("l_", "k_","j_","i_","h_","g_","f_")) # make this so that it extracts from file col
 
 combined_waves <- data.frame()
 
 # iteratively load waves, subset to variables of interest, and combine
-for(i in 1:3){#nrow(waves)){
+for(i in 1:nrow(waves)){
   this_wave <- haven::read_dta(paste0(inpath, waves[i,1]))
   
   # remove the wave prefixes from dataset
